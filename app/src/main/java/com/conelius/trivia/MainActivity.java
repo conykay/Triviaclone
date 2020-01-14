@@ -1,14 +1,18 @@
 package com.conelius.trivia;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 
 import com.conelius.trivia.data.AnswerListAsyncResponse;
 import com.conelius.trivia.data.QuestionBank;
@@ -82,11 +86,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.true_button:
                 checkAnswer(true);
+                updateQuestion();
 
                 break;
 
             case R.id.false_button:
                 checkAnswer(false);
+                updateQuestion();
                 break;
 
         }
@@ -100,6 +106,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             toastMessageId = R.string.correct_answer;
 
         }else{
+
+            shakeAnimation();
             toastMessageId = R.string.wrong_answer;
 
         }
@@ -114,4 +122,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         questionCounterTextView.setText(currentQuestionIndex + " / "+questionList.size());
 
     }
+
+    private void shakeAnimation() {
+        Animation shake = AnimationUtils.loadAnimation(MainActivity.this, R.anim.shake_animation);
+        final CardView cardView = findViewById(R.id.cardView);
+        cardView.setAnimation(shake);
+
+        shake.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                cardView.setCardBackgroundColor(Color.RED);
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+
+                cardView.setCardBackgroundColor(Color.WHITE);
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+    }
+
 }
