@@ -18,17 +18,27 @@ import androidx.cardview.widget.CardView;
 import com.conelius.trivia.data.AnswerListAsyncResponse;
 import com.conelius.trivia.data.QuestionBank;
 import com.conelius.trivia.models.Question;
+import com.conelius.trivia.models.Score;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private TextView questionTextView,questionCounterTextView;
+    private static final String HIGHSCORE_COUNT ="highscore_count" ;
+    private TextView questionTextView,questionCounterTextView,highScoreTextView,playerScoreTextView;
     private Button trueButton;
     private Button falsebutton;
     private ImageButton nextButton,prevButton;
     private int currentQuestionIndex = 0;
+
+    private int scoreCounter = 0;
+    private Score score;
+
+//    private int highscore = 0;
+//    private int playerScore = 0;
+
+
 
     private List<Question> questionList;
 
@@ -37,13 +47,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        score = new Score();
+
         nextButton = findViewById(R.id.next_button);
         prevButton = findViewById(R.id.prev_button);
         trueButton = findViewById(R.id.true_button);
         falsebutton = findViewById(R.id.false_button);
         questionCounterTextView = findViewById(R.id.counter_text);
         questionTextView = findViewById(R.id.question_textview);
-
+        playerScoreTextView = findViewById(R.id.player_score);
+        highScoreTextView = findViewById(R.id.highScore_textview);
 
         nextButton.setOnClickListener(this);
         prevButton.setOnClickListener(this);
@@ -64,6 +77,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             }
         });
+
+//        playerScoreTextView.setText("Score: "+ playerScore);
+//
+//        SharedPreferences getHighScore = getSharedPreferences(HIGHSCORE_COUNT,MODE_PRIVATE);
+//
+//        int count = getHighScore.getInt("highscore", 0);
+//
+//        highScoreTextView.setText("High score: "+ count);
 
 
     }
@@ -87,12 +108,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.true_button:
                 checkAnswer(true);
+//                updateScore(true);
                 updateQuestion();
 
                 break;
 
             case R.id.false_button:
                 checkAnswer(false);
+//                updateScore(false);
                 updateQuestion();
                 break;
 
@@ -104,17 +127,72 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int toastMessageId = 0;
         if (answerIsTrue == userChooseCorrect) {
             fadeView();
+            addPoints();
             toastMessageId = R.string.correct_answer;
 
         }else{
 
             shakeAnimation();
+            deductPoints();
             toastMessageId = R.string.wrong_answer;
 
         }
 
         Toast.makeText(this, toastMessageId, Toast.LENGTH_SHORT).show();
     }
+
+    private void addPoints() {
+        scoreCounter +=100;
+        score.setScore(scoreCounter);
+    }
+
+    private void deductPoints() {
+        scoreCounter +=100;
+        if (scoreCounter>0){
+            score.setScore(scoreCounter);
+        }else{
+            scoreCounter = 0;
+            score.setScore(scoreCounter);
+        }
+    }
+
+//    private void updateScore(boolean state) {
+//        SharedPreferences getHighScore = getSharedPreferences(HIGHSCORE_COUNT,MODE_PRIVATE);
+//        highscore = getHighScore.getInt("highscore", 0);
+//
+//        if (state == questionList.get(currentQuestionIndex).isAnswerTrue()){
+//
+//            if (playerScore > currentQuestionIndex){
+//                Toast.makeText(this, "Move to next question.", Toast.LENGTH_SHORT).show();
+//            }else{
+//
+//                playerScore +=1;
+//            }
+//
+//        }else{
+//            if (playerScore > 0){
+//
+//                playerScore -=1;
+//            }
+//        }
+//
+//        playerScoreTextView.setText("Score: "+playerScore);
+//
+//        SharedPreferences sharedPreferences = getSharedPreferences(HIGHSCORE_COUNT,MODE_PRIVATE);
+//        SharedPreferences.Editor editor = sharedPreferences.edit();
+//
+//        if (playerScore > highscore){
+//
+//            highscore = playerScore;
+//
+//            highScoreTextView.setText("High score: "+ highscore);
+//
+//        }
+//        editor.putInt("highscore",highscore);
+//
+//        editor.apply();
+//
+//    }
 
     private void updateQuestion() {
 
