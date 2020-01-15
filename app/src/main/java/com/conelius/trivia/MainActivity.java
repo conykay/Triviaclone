@@ -19,7 +19,9 @@ import com.conelius.trivia.data.AnswerListAsyncResponse;
 import com.conelius.trivia.data.QuestionBank;
 import com.conelius.trivia.models.Question;
 import com.conelius.trivia.models.Score;
+import com.conelius.trivia.util.Prefs;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private int scoreCounter = 0;
     private Score score;
+    private Prefs prefs;
 
 //    private int highscore = 0;
 //    private int playerScore = 0;
@@ -49,6 +52,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         score = new Score();
 
+        prefs = new Prefs(MainActivity.this);
+
+
+
         nextButton = findViewById(R.id.next_button);
         prevButton = findViewById(R.id.prev_button);
         trueButton = findViewById(R.id.true_button);
@@ -63,6 +70,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         falsebutton.setOnClickListener(this);
         trueButton.setOnClickListener(this);
 
+        playerScoreTextView.setText(MessageFormat.format("Current score: {0}", String.valueOf(score.getScore())));
+
+        highScoreTextView.setText(MessageFormat.format("Highest Score:{0}", prefs.getHighScore()));
 
 //        new QuestionBank().getQuestions();
 
@@ -88,7 +98,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     }
-
 
 
     @Override
@@ -144,15 +153,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void addPoints() {
         scoreCounter +=100;
         score.setScore(scoreCounter);
+        playerScoreTextView.setText(MessageFormat.format("Current score: {0}", String.valueOf(score.getScore())));
     }
 
     private void deductPoints() {
-        scoreCounter +=100;
+        scoreCounter -=100;
         if (scoreCounter>0){
             score.setScore(scoreCounter);
+            playerScoreTextView.setText(MessageFormat.format("Current score: {0}", String.valueOf(score.getScore())));
         }else{
             scoreCounter = 0;
             score.setScore(scoreCounter);
+            playerScoreTextView.setText(MessageFormat.format("Current score: {0}", String.valueOf(score.getScore())));
         }
     }
 
@@ -255,4 +267,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
+    @Override
+    protected void onPause() {
+        prefs.saveHighScore(score.getScore());
+        super.onPause();
+    }
 }
